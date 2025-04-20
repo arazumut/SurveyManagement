@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}Yeni Anket Oluştur - Anket Yönetim Platformu{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <div class="card">
+        <h1 class="card-title">Yeni Anket Oluştur</h1>
+        
+        <form method="post" action="{% url 'surveys:create_survey' %}">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <div class="form-group">
+                <label for="{{ form.title.id_for_label }}" class="form-label">Anket Başlığı</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <div style="color: var(--danger-color); font-size: 0.9rem; margin-top: 0.3rem;">
+                        {% for error in form.title.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div style="font-size: 0.8rem; color: var(--gray-color); margin-top: 0.3rem;">
+                    Anketiniz için açıklayıcı bir başlık girin.
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.description.id_for_label }}" class="form-label">Anket Açıklaması</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <div style="color: var(--danger-color); font-size: 0.9rem; margin-top: 0.3rem;">
+                        {% for error in form.description.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div style="font-size: 0.8rem; color: var(--gray-color); margin-top: 0.3rem;">
+                    Katılımcılara anketin amacını ve kapsamını açıklayan bir metin girin.
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-check">
+                    {{ form.is_active }}
+                    <span style="margin-left: 0.5rem;">Anket Aktif</span>
+                </label>
+                {% if form.is_active.errors %}
+                    <div style="color: var(--danger-color); font-size: 0.9rem; margin-top: 0.3rem;">
+                        {% for error in form.is_active.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div style="font-size: 0.8rem; color: var(--gray-color); margin-top: 0.3rem; margin-left: 1.8rem;">
+                    Aktif anketler herkese açık olarak görüntülenebilir ve yanıtlanabilir.
+                </div>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                <a href="{% url 'surveys:my_surveys' %}" class="btn btn-outline">İptal</a>
+                <button type="submit" class="btn btn-primary">Anket Oluştur</button>
+            </div>
+        </form>
+    </div>
+    
+    <div style="margin-top: 2rem; background-color: #f8f9fa; border-radius: 8px; padding: 1.5rem;">
+        <h3 style="font-size: 1.2rem; color: var(--dark-color); margin-bottom: 1rem;">Anket Oluşturma İpuçları</h3>
+        <ul style="padding-left: 1.5rem; margin-bottom: 0;">
+            <li style="margin-bottom: 0.5rem;">Anket başlığı kısa ve açıklayıcı olmalıdır.</li>
+            <li style="margin-bottom: 0.5rem;">Açıklama bölümünde anketin amacını ve yaklaşık tamamlanma süresini belirtin.</li>
+            <li style="margin-bottom: 0.5rem;">Anketiniz oluşturulduktan sonra soru ekleme sayfasına yönlendirileceksiniz.</li>
+            <li style="margin-bottom: 0.5rem;">Soruları hazır olmadan önce anketinizi aktifleştirmemenizi öneririz.</li>
+            <li>Oluşturduğunuz anketleri "Anketlerim" sayfasından düzenleyebilir ve yönetebilirsiniz.</li>
+        </ul>
+    </div>
+</div>
+{% endblock %} 

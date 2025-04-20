@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}Kayıt Ol - Anket Yönetim Platformu{% endblock %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 0 auto;">
+    <div class="card">
+        <h1 class="card-title" style="text-align: center;">Hesap Oluştur</h1>
+        
+        <form method="post" action="{% url 'surveys:register' %}">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}" class="form-label">Kullanıcı Adı</label>
+                <input type="text" name="{{ form.username.html_name }}" id="{{ form.username.id_for_label }}" {% if form.username.value %}value="{{ form.username.value }}"{% endif %} style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; transition: all 0.3s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.05);" autocomplete="username" required>
+                {% if form.username.errors %}
+                    <div style="color: var(--danger-color); font-size: 0.9rem; margin-top: 0.3rem;">
+                        {% for error in form.username.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div style="font-size: 0.8rem; color: var(--gray-color); margin-top: 0.3rem;">
+                    Sadece harfler, rakamlar ve @/./+/-/_ karakterlerini içerebilir.
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.email.id_for_label }}" class="form-label">E-posta Adresi</label>
+                <input type="email" name="{{ form.email.html_name }}" id="{{ form.email.id_for_label }}" {% if form.email.value %}value="{{ form.email.value }}"{% endif %} style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; transition: all 0.3s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.05);" autocomplete="email" required>
+                {% if form.email.errors %}
+                    <div style="color: var(--danger-color); font-size: 0.9rem; margin-top: 0.3rem;">
+                        {% for error in form.email.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.password1.id_for_label }}" class="form-label">Şifre</label>
+                <input type="password" name="{{ form.password1.html_name }}" id="{{ form.password1.id_for_label }}" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; transition: all 0.3s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.05);" autocomplete="new-password" required>
+                {% if form.password1.errors %}
+                    <div style="color: var(--danger-color); font-size: 0.9rem; margin-top: 0.3rem;">
+                        {% for error in form.password1.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div style="font-size: 0.8rem; color: var(--gray-color); margin-top: 0.3rem;">
+                    <ul style="padding-left: 1.2rem; margin: 0.5rem 0;">
+                        <li>Şifreniz en az 8 karakter uzunluğunda olmalıdır.</li>
+                        <li>Şifreniz yaygın olarak kullanılan bir şifre olmamalıdır.</li>
+                        <li>Şifreniz tamamen sayısal olmamalıdır.</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.password2.id_for_label }}" class="form-label">Şifre (Tekrar)</label>
+                <input type="password" name="{{ form.password2.html_name }}" id="{{ form.password2.id_for_label }}" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; transition: all 0.3s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.05);" autocomplete="new-password" required>
+                {% if form.password2.errors %}
+                    <div style="color: var(--danger-color); font-size: 0.9rem; margin-top: 0.3rem;">
+                        {% for error in form.password2.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div style="font-size: 0.8rem; color: var(--gray-color); margin-top: 0.3rem;">
+                    Doğrulama için şifrenizi tekrar girin.
+                </div>
+            </div>
+            
+            <div class="form-group" style="display: flex; align-items: flex-start;">
+                <label class="form-check" style="margin-top: 0.2rem;">
+                    <input type="checkbox" class="form-check-input" name="terms" required style="width: 16px; height: 16px; margin-right: 8px;">
+                    <span style="font-size: 0.9rem; margin-left: 0.3rem;">
+                        <a href="#" style="color: var(--primary-color); text-decoration: none;">Kullanım Koşulları</a> ve <a href="#" style="color: var(--primary-color); text-decoration: none;">Gizlilik Politikası</a>'nı okudum ve kabul ediyorum.
+                    </span>
+                </label>
+            </div>
+            
+            <div style="margin-top: 2rem;">
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; border-radius: 8px; font-weight: 500; font-size: 16px;">Kayıt Ol</button>
+            </div>
+            
+            <div style="text-align: center; margin-top: 1.5rem; color: var(--gray-color); font-size: 0.9rem;">
+                Zaten hesabınız var mı? <a href="{% url 'surveys:login' %}" style="color: var(--primary-color); text-decoration: none; font-weight: 500;">Giriş Yap</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

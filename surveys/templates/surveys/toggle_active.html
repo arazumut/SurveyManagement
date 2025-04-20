@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Anket Durumunu Değiştir{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <div class="card">
+        <h1 class="card-title">Anket Durumunu Değiştir</h1>
+        
+        <p style="margin-bottom: 1.5rem;">
+            {{ survey.title }} anketinin durumunu 
+            {% if survey.is_active %}
+                <strong style="color: var(--danger-color);">pasif</strong> duruma getirmek
+            {% else %}
+                <strong style="color: var(--secondary-color);">aktif</strong> duruma getirmek
+            {% endif %}
+            üzeresiniz.
+        </p>
+        
+        <div style="background-color: #f8f9fa; border-radius: 8px; padding: 1.2rem; margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1.1rem; color: var(--dark-color); margin-bottom: 0.8rem;">Bu Değişikliğin Etkileri:</h3>
+            
+            {% if survey.is_active %}
+                <ul style="padding-left: 1.5rem; margin-bottom: 0;">
+                    <li style="margin-bottom: 0.5rem;">Anket artık kullanıcılar tarafından görüntülenemeyecek.</li>
+                    <li style="margin-bottom: 0.5rem;">Yeni yanıtlar alınamayacak.</li>
+                    <li>Mevcut yanıtlar korunacak ve erişilebilir olacak.</li>
+                </ul>
+            {% else %}
+                <ul style="padding-left: 1.5rem; margin-bottom: 0;">
+                    <li style="margin-bottom: 0.5rem;">Anket kullanıcılara açık olacak ve yeni yanıtlar alabileceksiniz.</li>
+                    <li style="margin-bottom: 0.5rem;">Anketinizin paylaşım bağlantısını kullanarak dağıtabilirsiniz.</li>
+                    <li>Anketinizi aktif etmeden önce tüm soruları eklemiş olduğunuzdan emin olun.</li>
+                </ul>
+            {% endif %}
+        </div>
+        
+        <form method="post" action="{% url 'surveys:toggle_survey_active' survey.slug %}">
+            {% csrf_token %}
+            <div style="display: flex; justify-content: space-between;">
+                <a href="{% url 'surveys:my_surveys' %}" class="btn btn-outline">İptal</a>
+                <button type="submit" class="btn {% if survey.is_active %}btn-danger{% else %}btn-primary{% endif %}">
+                    {% if survey.is_active %}
+                        Anketi Pasif Yap
+                    {% else %}
+                        Anketi Aktif Yap
+                    {% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

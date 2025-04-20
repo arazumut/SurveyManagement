@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Seçenekleri Düzenle - {{ question.text }} - Anket Yönetim Platformu{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <div class="card">
+        <h1 class="card-title">Seçenekleri Düzenle</h1>
+        <p style="color: var(--gray-color); margin-bottom: 0.5rem;">Anket: {{ survey.title }}</p>
+        <p style="color: var(--dark-color); font-weight: 500; margin-bottom: 1.5rem;">
+            Soru: {{ question.text }}
+            {% if question.question_type == "radio" %}
+            <span style="font-weight: normal; color: var(--gray-color); font-size: 0.9rem;">(Çoktan Seçmeli - Tek Seçim)</span>
+            {% elif question.question_type == "checkbox" %}
+            <span style="font-weight: normal; color: var(--gray-color); font-size: 0.9rem;">(Çoktan Seçmeli - Çoklu Seçim)</span>
+            {% endif %}
+        </p>
+        
+        <form method="post" action="{% url 'surveys:manage_choices' question.id %}">
+            {% csrf_token %}
+            
+            {{ formset.management_form }}
+            
+            {% if formset.non_form_errors %}
+                <div class="alert alert-danger">
+                    {% for error in formset.non_form_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 1.5rem;">
+                <thead>
+                    <tr style="border-bottom: 2px solid #eee;">
+                        <th style="padding: 0.8rem; text-align: left; font-weight: 500;">Seçenek Metni</th>
+                        <th style="padding: 0.8rem; width: 80px; text-align: center; font-weight: 500;">Sil</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for form in formset %}
+                        <tr style="border-bottom: 1px solid #eee;">
+                            <td style="padding: 0.8rem;">
+                                {{ form.id }}
+                                <div class="form-group" style="margin-bottom: 0;">
+                                    <input type="text" name="{{ form.text.html_name }}" id="{{ form.text.id_for_label }}" value="{{ form.text.value|default:'' }}" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; transition: all 0.3s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.05);" {% if not form.instance.pk %}placeholder="Yeni seçenek..."{% endif %}>
+                                    {% if form.text.errors %}
+                                        <div style="color: var(--danger-color); font-size: 0.9rem; margin-top: 0.3rem;">
+                                            {% for error in form.text.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td style="padding: 0.8rem; text-align: center;">
+                                {% if form.instance.pk %}
+                                    <div class="form-check" style="display: flex; justify-content: center;">
+                                        <input type="checkbox" name="{{ form.DELETE.html_name }}" id="{{ form.DELETE.id_for_label }}" {% if form.DELETE.value %}checked{% endif %} style="width: 18px; height: 18px;">
+                                    </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                <a href="{% url 'surveys:edit_question' question.id %}" class="btn btn-outline">Geri Dön</a>
+                <button type="submit" class="btn btn-primary">Seçenekleri Kaydet</button>
+            </div>
+        </form>
+    </div>
+    
+    <div style="margin-top: 2rem; background-color: #f8f9fa; border-radius: 8px; padding: 1.5rem;">
+        <h3 style="font-size: 1.2rem; color: var(--dark-color); margin-bottom: 1rem;">Seçenek Düzenleme İpuçları</h3>
+        <ul style="padding-left: 1.5rem; margin-bottom: 0;">
+            <li style="margin-bottom: 0.5rem;">Seçenek metinleri kısa ve anlaşılır olmalıdır.</li>
+            <li style="margin-bottom: 0.5rem;">Bir seçeneği silmek için "Sil" sütunundaki kutuyu işaretleyin.</li>
+            <li style="margin-bottom: 0.5rem;">Yeni seçenek eklemek için boş alanı doldurun.</li>
+            <li>İyi bir anket için 3-7 arası seçenek idealdir.</li>
+        </ul>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}Ana Sayfa - Anket Yönetim Platformu{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero" style="background: linear-gradient(135deg, #3498db 0%, #2ecc71 100%); padding: 4rem 0; border-radius: 8px; text-align: center; color: white; margin-bottom: 3rem;">
+    <div class="hero-content">
+        <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">Modern Anket Yönetim Platformu</h1>
+        <p style="font-size: 1.1rem; margin-bottom: 2rem; opacity: 0.9;">Anketlerinizi kolayca oluşturun, yönetin ve sonuçları analiz edin</p>
+        
+        <div style="background-color: var(--white-color); padding: 0.8rem; border-radius: 50px; width: 80%; max-width: 600px; margin: 0 auto; display: flex; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);">
+            <input type="text" placeholder="Anket kodunu girin..." style="flex: 1; border: none; padding: 0.5rem 1rem; font-size: 1rem; outline: none;">
+            <button style="background-color: var(--primary-color); color: var(--white-color); border: none; border-radius: 50px; padding: 0.5rem 1.5rem; font-size: 1rem; cursor: pointer; transition: background-color 0.3s;">Ankete Katıl</button>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section style="margin-bottom: 4rem;">
+    <div style="text-align: center; margin-bottom: 3rem;">
+        <h2 style="font-size: 2rem; color: var(--dark-color); margin-bottom: 1rem; position: relative; display: inline-block;">Özelliklerimiz</h2>
+        <div style="width: 50px; height: 3px; background-color: var(--primary-color); margin: 0 auto;"></div>
+        <p style="color: var(--gray-color); max-width: 600px; margin: 1rem auto 0;">Anket Yönetim Platformu, ihtiyacınız olan tüm özellikleri basit ve kullanışlı bir arayüzle sunar.</p>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+        <div class="card">
+            <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--primary-color); text-align: center;">📊</div>
+            <h3 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--dark-color); text-align: center;">Kolay Anket Oluşturma</h3>
+            <p style="color: var(--gray-color); text-align: center;">Sürükle-bırak arayüzü ile dakikalar içinde profesyonel anketler oluşturun.</p>
+        </div>
+        
+        <div class="card">
+            <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--primary-color); text-align: center;">🔍</div>
+            <h3 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--dark-color); text-align: center;">Detaylı Analiz</h3>
+            <p style="color: var(--gray-color); text-align: center;">Anket sonuçlarını görsel grafikler ve raporlarla analiz edin.</p>
+        </div>
+        
+        <div class="card">
+            <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--primary-color); text-align: center;">🔒</div>
+            <h3 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--dark-color); text-align: center;">Güvenli Erişim</h3>
+            <p style="color: var(--gray-color); text-align: center;">Benzersiz erişim kodları ile anketlerinize istenmeyen erişimleri engelleyin.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Popular Surveys Section -->
+{% if popular_surveys %}
+<section style="margin-bottom: 4rem;">
+    <div style="text-align: center; margin-bottom: 3rem;">
+        <h2 style="font-size: 2rem; color: var(--dark-color); margin-bottom: 1rem; position: relative; display: inline-block;">Popüler Anketler</h2>
+        <div style="width: 50px; height: 3px; background-color: var(--primary-color); margin: 0 auto;"></div>
+        <p style="color: var(--gray-color); max-width: 600px; margin: 1rem auto 0;">Katılım sağlayabileceğiniz aktif anketler.</p>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem;">
+        {% for survey in popular_surveys %}
+        <div style="background-color: var(--white-color); border-radius: 8px; overflow: hidden; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); transition: transform 0.3s ease;">
+            <div style="padding: 1.5rem;">
+                <span style="display: inline-block; background-color: rgba(46, 204, 113, 0.1); color: var(--secondary-color); padding: 0.3rem 0.8rem; border-radius: 50px; font-size: 0.8rem; margin-bottom: 1rem;">{{ survey.category }}</span>
+                <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--dark-color);">{{ survey.title }}</h3>
+                <p style="color: var(--gray-color); font-size: 0.9rem; margin-bottom: 1rem; height: 60px; overflow: hidden;">{{ survey.description|truncatechars:100 }}</p>
+                <div style="display: flex; justify-content: space-between; color: var(--gray-color); font-size: 0.85rem; padding-top: 1rem; border-top: 1px solid #eee;">
+                    <div>
+                        <span>{{ survey.responses_count }} yanıt</span>
+                    </div>
+                    <div>
+                        <span>{{ survey.time_remaining }} gün kaldı</span>
+                    </div>
+                </div>
+                <a href="{% url 'surveys:view_survey' survey.slug %}" style="display: block; text-align: center; margin-top: 1rem; background-color: var(--primary-color); color: var(--white-color); padding: 0.7rem; border-radius: 4px; text-decoration: none; font-weight: 500;">Ankete Katıl</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<!-- CTA Section -->
+<section style="background-color: var(--primary-color); padding: 4rem 0; border-radius: 8px; text-align: center; color: white; margin-bottom: 3rem;">
+    <h2 style="font-size: 2rem; margin-bottom: 1rem;">Hemen Kendi Anketinizi Oluşturun</h2>
+    <p style="max-width: 600px; margin: 0 auto 2rem; opacity: 0.9;">Ücretsiz hesap oluşturarak anketlerinizi tasarlamaya hemen başlayabilirsiniz.</p>
+    
+    {% if user.is_authenticated %}
+    <a href="{% url 'surveys:create_survey' %}" class="btn btn-secondary">Yeni Anket Oluştur</a>
+    {% else %}
+    <a href="{% url 'surveys:register' %}" class="btn btn-secondary">Hemen Kaydol</a>
+    {% endif %}
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Anket Kod Arama İşlevi
+    document.querySelector('.hero-content button').addEventListener('click', function() {
+        const surveyCode = document.querySelector('.hero-content input').value.trim();
+        if (surveyCode) {
+            window.location.href = `/anket/kod/${surveyCode}/`;
+        }
+    });
+    
+    // Enter tuşu ile arama yapmak için
+    document.querySelector('.hero-content input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            const surveyCode = this.value.trim();
+            if (surveyCode) {
+                window.location.href = `/anket/kod/${surveyCode}/`;
+            }
+        }
+    });
+</script>
+{% endblock %} 

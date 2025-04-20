@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Anket Zaten Yanıtlandı - {{ survey.title }}{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <div class="card">
+        <h1 class="card-title">Bu Anketi Zaten Yanıtladınız</h1>
+        
+        <div style="background-color: #f8f9fa; border-radius: 8px; padding: 2rem; margin: 2rem 0; text-align: center;">
+            <img src="https://cdn-icons-png.flaticon.com/512/3156/3156163.png" alt="Anket Tamamlandı" style="width: 100px; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.4rem; color: var(--dark-color); margin-bottom: 1rem;">{{ survey.title }}</h2>
+            <p style="color: var(--gray-color); margin-bottom: 1.5rem;">Bu anketi daha önce yanıtladığınız için tekrar yanıtlayamazsınız. Katılımınız için teşekkür ederiz.</p>
+            
+            {% with response_date=user_response.created_at %}
+            <p style="font-size: 0.9rem; color: var(--dark-color);">
+                Yanıt tarihiniz: <strong>{{ response_date|date:"d.m.Y H:i" }}</strong>
+            </p>
+            {% endwith %}
+        </div>
+        
+        <div style="display: flex; flex-direction: column; align-items: center; margin-top: 1rem;">
+            <a href="{% url 'surveys:index' %}" class="btn btn-primary" style="margin-bottom: 1rem;">Ana Sayfaya Dön</a>
+            
+            {% if user.is_authenticated %}
+                <a href="{% url 'surveys:my_surveys' %}" class="btn btn-outline">Anketlerim</a>
+            {% endif %}
+        </div>
+    </div>
+    
+    {% if user.is_authenticated and survey.created_by == user %}
+    <div style="margin-top: 2rem; text-align: center; padding: 1.5rem; background-color: #f9f9f9; border-radius: 8px;">
+        <p style="margin-bottom: 1rem;">Bu anketin sahibi olarak anket sonuçlarını görebilir veya düzenleyebilirsiniz.</p>
+        <div style="display: flex; justify-content: center; gap: 1rem;">
+            <a href="{% url 'surveys:survey_results' survey.slug %}" class="btn btn-primary">Sonuçları Görüntüle</a>
+            <a href="{% url 'surveys:edit_survey' survey.slug %}" class="btn btn-outline">Anketi Düzenle</a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

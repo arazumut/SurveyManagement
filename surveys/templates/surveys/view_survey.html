@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ survey.title }} - Anket Yönetim Platformu{% endblock %}
+
+{% block extra_css %}
+<style>
+    .question-container {
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .question-required {
+        color: var(--danger-color);
+        margin-left: 5px;
+    }
+    
+    .question-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        font-weight: 500;
+        margin-right: 10px;
+    }
+    
+    .radio-option, .checkbox-option {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 0.8rem;
+    }
+    
+    .radio-option input, .checkbox-option input {
+        margin-top: 0.3rem;
+        margin-right: 0.8rem;
+    }
+    
+    .rating-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+    
+    .rating-option {
+        display: none;
+    }
+    
+    .rating-label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background-color: #f8f9fa;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .rating-option:checked + .rating-label {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    .rating-option:hover + .rating-label {
+        background-color: rgba(52, 152, 219, 0.2);
+    }
+    
+    .rating-scale {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 0.5rem;
+        font-size: 0.8rem;
+        color: var(--gray-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <div class="card">
+        <h1 class="card-title">{{ survey.title }}</h1>
+        <p style="margin-bottom: 2rem; color: var(--gray-color);">{{ survey.description }}</p>
+        
+        <form method="post" action="{% url 'surveys:submit_survey' survey.slug %}">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            {% for question in survey.questions.all %}
+                <div class="question-container">
+                    <div style="margin-bottom: 1rem;">
+                        <span class="question-number">{{ forloop.counter }}</span>
+                        <span style="font-weight: 500;">{{ question.text }}</span>
+                        {% if question.required %}
+                            <span class="question-required">*</span>
+                        {% endif %}
+                    </div>
+                    
+                    {% with field_name="question_"|add:question.id|stringformat:"i" %}
+                        {% if question.question_type == "text_short" %}
+                            <input type="text" name="{{ field_name }}" class="form-input" 
+                                   {% if question.required %}required{% endif %}>
+                        
+                        {% elif question.question_type == "text_long" %}
+                            <textarea name="{{ field_name }}" class="form-textarea" rows="4"
+                                      {% if question.required %}required{% endif %}></textarea>
+                        
+                        {% elif question.question_type == "radio" %}
+                            <div style="margin-top: 1rem;">
+                                {% for choice in question.choices.all %}
+                                    <div class="radio-option">
+                                        <input type="radio" id="choice_{{ choice.id }}" name="{{ field_name }}" 
+                                               value="{{ choice.id }}" {% if question.required %}required{% endif %}>
+                                        <label for="choice_{{ choice.id }}">{{ choice.text }}</label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        
+                        {% elif question.question_type == "checkbox" %}
+                            <div style="margin-top: 1rem;">
+                                {% for choice in question.choices.all %}
+                                    <div class="checkbox-option">
+                                        <input type="checkbox" id="choice_{{ choice.id }}" name="{{ field_name }}" 
+                                               value="{{ choice.id }}">
+                                        <label for="choice_{{ choice.id }}">{{ choice.text }}</label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        
+                        {% elif question.question_type == "rating" %}
+                            <div class="rating-options">
+                                {% for i in rating_range %}
+                                    <input type="radio" id="rating_{{ question.id }}_{{ i }}" 
+                                           name="{{ field_name }}" value="{{ i }}"
+                                           class="rating-option" {% if question.required %}required{% endif %}>
+                                    <label for="rating_{{ question.id }}_{{ i }}" class="rating-label">{{ i }}</label>
+                                {% endfor %}
+                            </div>
+                            <div class="rating-scale">
+                                <span>{{ question.min_rate }} - Çok Kötü</span>
+                                <span>{{ question.max_rate }} - Çok İyi</span>
+                            </div>
+                        
+                        {% elif question.question_type == "date" %}
+                            <input type="date" name="{{ field_name }}" class="form-input"
+                                   {% if question.required %}required{% endif %}>
+                        {% endif %}
+                        
+                        {% if field.errors %}
+                            <div style="color: var(--danger-color); font-size: 0.9rem; margin-top: 0.5rem;">
+                                {% for error in field.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+            {% endfor %}
+            
+            <div style="margin-top: 2rem; display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 0.85rem; color: var(--gray-color);">
+                    <span class="question-required">*</span> işaretli alanlar zorunludur.
+                </div>
+                <button type="submit" class="btn btn-primary">Anketi Gönder</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Derecelendirme sorularının min-max değerlerini ayarla
+    document.addEventListener('DOMContentLoaded', function() {
+        {% for question in survey.questions.all %}
+            {% if question.question_type == "rating" %}
+                var ratingRange = [];
+                for (var i = {{ question.min_rate }}; i <= {{ question.max_rate }}; i++) {
+                    ratingRange.push(i);
+                }
+                console.log('Rating range for question {{ question.id }}:', ratingRange);
+            {% endif %}
+        {% endfor %}
+    });
+</script>
+{% endblock %} 

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Anketi Sil{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <div class="card">
+        <h1 class="card-title">Anketi Silmek İstediğinizden Emin Misiniz?</h1>
+        <p>{{ survey.title }} anketini silmek üzeresiniz. Bu işlem geri alınamaz.</p>
+        
+        <form method="post" action="{% url 'surveys:delete_survey' survey.slug %}">
+            {% csrf_token %}
+            <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                <a href="{% url 'surveys:edit_survey' survey.slug %}" class="btn btn-outline">İptal</a>
+                <button type="submit" class="btn btn-danger">Evet, Anketi Sil</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

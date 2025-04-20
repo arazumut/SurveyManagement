@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Teşekkürler - Anket Yönetim Platformu{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto; text-align: center;">
+    <div class="card" style="padding: 3rem 2rem;">
+        <div style="font-size: 5rem; margin-bottom: 1.5rem; color: var(--secondary-color);">✓</div>
+        <h1 style="font-size: 2rem; margin-bottom: A1.5rem; color: var(--dark-color);">Yanıtlarınız İçin Teşekkürler!</h1>
+        <p style="color: var(--gray-color); margin-bottom: 2rem;">{{ survey.title }} anketine katıldığınız için teşekkür ederiz. Yanıtlarınız başarıyla kaydedildi.</p>
+        
+        <div style="margin-top: 2rem;">
+            <a href="{% url 'surveys:index' %}" class="btn btn-primary">Ana Sayfaya Dön</a>
+        </div>
+        
+        {% if user.is_authenticated %}
+            <div style="margin-top: 1.5rem;">
+                <a href="{% url 'surveys:my_surveys' %}" class="btn btn-outline">Anketlerime Dön</a>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div style="margin-top: 2rem;">
+        <h2 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--dark-color);">Başka Bir Ankete Katılmak İster misiniz?</h2>
+        <p style="color: var(--gray-color); margin-bottom: 1.5rem;">Aşağıdaki arama kutusu ile anket kodu girerek başka anketlere katılabilirsiniz.</p>
+        
+        <div style="display: flex; max-width: 400px; margin: 0 auto;">
+            <input type="text" id="surveyCodeInput" placeholder="Anket kodu girin..." style="flex: 1; padding: 0.8rem; border: 1px solid #ddd; border-radius: 4px 0 0 4px; outline: none;">
+            <button onclick="goToSurvey()" class="btn btn-primary" style="border-radius: 0 4px 4px 0;">Ankete Git</button>
+        </div>
+    </div>
+    
+    <div style="margin-top: 3rem; background-color: #f8f9fa; border-radius: 8px; padding: 1.5rem; text-align: left;">
+        <h3 style="font-size: 1.1rem; color: var(--dark-color); margin-bottom: 1rem;">Kendi Anketinizi Oluşturmak İster misiniz?</h3>
+        <p style="color: var(--gray-color); margin-bottom: 1.5rem;">Anket Yönetim Platformu ile siz de kolayca anketler oluşturabilir, paylaşabilir ve sonuçları analiz edebilirsiniz.</p>
+        
+        {% if user.is_authenticated %}
+            <a href="{% url 'surveys:create_survey' %}" class="btn btn-secondary">Hemen Anket Oluştur</a>
+        {% else %}
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <a href="{% url 'surveys:register' %}" class="btn btn-secondary">Ücretsiz Hesap Oluştur</a>
+                <a href="{% url 'surveys:login' %}" class="btn btn-outline">Giriş Yap</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    function goToSurvey() {
+        const surveyCode = document.getElementById('surveyCodeInput').value.trim();
+        if (surveyCode) {
+            window.location.href = `/anket/kod/${surveyCode}/`;
+        } else {
+            alert('Lütfen geçerli bir anket kodu girin.');
+        }
+    }
+    
+    // Enter tuşu ile arama
+    document.getElementById('surveyCodeInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            goToSurvey();
+        }
+    });
+</script>
+{% endblock %}

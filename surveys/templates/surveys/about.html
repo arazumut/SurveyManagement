@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Hakkımızda - Anket Yönetim Platformu{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1 class="card-title">Hakkımızda</h1>
+    
+    <div class="card-body">
+        <p style="margin-bottom: 1.5rem;">
+            <strong>Anket Yönetim Platformu</strong>, kullanıcıların kolayca anket oluşturmasını, paylaşmasını ve sonuçları analiz etmesini sağlayan modern bir web uygulamasıdır. Platformumuz, araştırma yapan, müşteri geri bildirimi toplayan veya etkinlik organizasyonu yapan herkes için ideal bir çözümdür.
+        </p>
+        
+        <h2 style="font-size: 1.4rem; margin: 2rem 0 1rem; color: var(--dark-color);">Misyonumuz</h2>
+        <p style="margin-bottom: 1.5rem;">
+            İnsanların veri toplama ve analiz süreçlerini kolaylaştırarak, daha iyi kararlar almalarına yardımcı olmak için teknolojinin gücünden yararlanmak misyonumuzdur. Kullanıcı dostu bir platform oluşturarak, herkesin anket oluşturma sürecini basitleştirmeyi ve verilerin değerini en üst düzeye çıkarmayı hedefliyoruz.
+        </p>
+        
+        <h2 style="font-size: 1.4rem; margin: 2rem 0 1rem; color: var(--dark-color);">Platformumuzun Avantajları</h2>
+        <ul style="list-style-position: inside; margin-bottom: 1.5rem; padding-left: 1rem;">
+            <li style="margin-bottom: 0.5rem;">Kolay ve hızlı anket oluşturma</li>
+            <li style="margin-bottom: 0.5rem;">Çeşitli soru tipleri desteği (çoktan seçmeli, metin, puan, vb.)</li>
+            <li style="margin-bottom: 0.5rem;">Mobil uyumlu tasarım</li>
+            <li style="margin-bottom: 0.5rem;">Gerçek zamanlı sonuç takibi</li>
+            <li style="margin-bottom: 0.5rem;">Veri dışa aktarma seçenekleri</li>
+            <li style="margin-bottom: 0.5rem;">Güvenli ve özel anket paylaşımı</li>
+        </ul>
+        
+        <h2 style="font-size: 1.4rem; margin: 2rem 0 1rem; color: var(--dark-color);">Kimler İçin?</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin: 2rem 0;">
+            <div style="background-color: rgba(52, 152, 219, 0.1); padding: 1.5rem; border-radius: 8px;">
+                <h3 style="font-size: 1.2rem; color: var(--primary-color); margin-bottom: 1rem;">Araştırmacılar</h3>
+                <p>Akademik çalışmalar ve pazar araştırmaları için güvenilir veri toplama aracı.</p>
+            </div>
+            
+            <div style="background-color: rgba(46, 204, 113, 0.1); padding: 1.5rem; border-radius: 8px;">
+                <h3 style="font-size: 1.2rem; color: var(--secondary-color); margin-bottom: 1rem;">İşletmeler</h3>
+                <p>Müşteri memnuniyeti ölçümü ve ürün geliştirme için geri bildirim toplama.</p>
+            </div>
+            
+            <div style="background-color: rgba(155, 89, 182, 0.1); padding: 1.5rem; border-radius: 8px;">
+                <h3 style="font-size: 1.2rem; color: #9b59b6; margin-bottom: 1rem;">Eğitimciler</h3>
+                <p>Öğrenci geri bildirimleri ve değerlendirmeler için pratik anket çözümü.</p>
+            </div>
+        </div>
+        
+        <h2 style="font-size: 1.4rem; margin: 2rem 0 1rem; color: var(--dark-color);">Ekibimiz</h2>
+        <p style="margin-bottom: 1.5rem;">
+            Yazılım geliştirme, kullanıcı deneyimi tasarımı ve veri analizi konularında uzman bir ekip tarafından geliştirilen platformumuz, kullanıcılarımızın ihtiyaçlarına göre sürekli olarak iyileştirilmektedir.
+        </p>
+        
+        <h2 style="font-size: 1.4rem; margin: 2rem 0 1rem; color: var(--dark-color);">İletişim</h2>
+        <p style="margin-bottom: 1.5rem;">
+            Herhangi bir soru, öneri veya geri bildiriminiz için <strong>info@anketyonetim.com</strong> adresine e-posta gönderebilirsiniz.
+        </p>
+    </div>
+</div>
+
+<!-- CTA Section -->
+<section style="background-color: var(--primary-color); padding: 3rem; border-radius: 8px; text-align: center; color: white; margin-top: 2rem;">
+    <h2 style="font-size: 1.8rem; margin-bottom: 1rem;">Hemen Başlayın</h2>
+    <p style="max-width: 600px; margin: 0 auto 1.5rem; opacity: 0.9;">Anket Yönetim Platformu'nu keşfedin ve anketlerinizi oluşturmaya başlayın.</p>
+    
+    {% if user.is_authenticated %}
+    <a href="{% url 'surveys:create_survey' %}" class="btn btn-secondary">Yeni Anket Oluştur</a>
+    {% else %}
+    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <a href="{% url 'surveys:register' %}" class="btn btn-secondary">Hemen Kaydol</a>
+        <a href="{% url 'surveys:login' %}" class="btn" style="background-color: rgba(255, 255, 255, 0.2); color: white;">Giriş Yap</a>
+    </div>
+    {% endif %}
+</section>
+{% endblock %} 

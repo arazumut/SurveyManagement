@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ survey.title }} - Düzenle - Anket Yönetim Platformu{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <div class="card">
+        <h1 class="card-title">Anket Düzenle: {{ survey.title }}</h1>
+        
+        <form method="post" action="{% url 'surveys:edit_survey' survey.slug %}">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <div class="form-group">
+                <label for="{{ form.title.id_for_label }}" class="form-label">Anket Başlığı</label>
+                <input type="text" name="{{ form.title.html_name }}" id="{{ form.title.id_for_label }}" value="{{ form.title.value|default:'' }}" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; transition: all 0.3s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.05);" required>
+                {% if form.title.errors %}
+                    <div style="color: var(--danger-color); font-size: 0.9rem; margin-top: 0.3rem;">
+                        {% for error in form.title.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div style="font-size: 0.8rem; color: var(--gray-color); margin-top: 0.3rem;">
+                    Anketiniz için açıklayıcı bir başlık girin.
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.description.id_for_label }}" class="form-label">Anket Açıklaması</label>
+                <textarea name="{{ form.description.html_name }}" id="{{ form.description.id_for_label }}" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; transition: all 0.3s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.05); min-height: 120px;">{{ form.description.value|default:'' }}</textarea>
+                {% if form.description.errors %}
+                    <div style="color: var(--danger-color); font-size: 0.9rem; margin-top: 0.3rem;">
+                        {% for error in form.description.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div style="font-size: 0.8rem; color: var(--gray-color); margin-top: 0.3rem;">
+                    Katılımcılara anketin amacını ve kapsamını açıklayan bir metin girin.
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-check">
+                    <input type="checkbox" name="{{ form.is_active.html_name }}" id="{{ form.is_active.id_for_label }}" {% if form.is_active.value %}checked{% endif %} style="width: 16px; height: 16px; margin-right: 8px;">
+                    <span style="margin-left: 0.5rem;">Anket Aktif</span>
+                </label>
+                {% if form.is_active.errors %}
+                    <div style="color: var(--danger-color); font-size: 0.9rem; margin-top: 0.3rem;">
+                        {% for error in form.is_active.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div style="font-size: 0.8rem; color: var(--gray-color); margin-top: 0.3rem; margin-left: 1.8rem;">
+                    Aktif anketler herkese açık olarak görüntülenebilir ve yanıtlanabilir.
+                </div>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                <a href="{% url 'surveys:my_surveys' %}" class="btn btn-outline">Geri Dön</a>
+                <button type="submit" class="btn btn-primary">Değişiklikleri Kaydet</button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Sorular Bölümü -->
+    <div class="card" style="margin-top: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h2 class="card-title" style="margin-bottom: 0;">Anket Soruları</h2>
+            <a href="{% url 'surveys:add_question' survey.slug %}" class="btn btn-primary">Yeni Soru Ekle</a>
+        </div>
+        
+        {% if questions %}
+            <div style="margin-bottom: 1.5rem;">
+                {% for question in questions %}
+                    <div style="border: 1px solid #eee; border-radius: 8px; padding: 1.2rem; margin-bottom: 1rem; background-color: #fafafa;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div>
+                                <span style="background-color: var(--primary-color); color: white; border-radius: 50%; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; margin-right: 10px;">{{ forloop.counter }}</span>
+                                <span style="font-weight: 500;">{{ question.text }}</span>
+                                {% if question.required %}
+                                    <span style="color: var(--danger-color); font-size: 0.9rem; margin-left: 5px;">*</span>
+                                {% endif %}
+                                <div style="margin-left: 34px; margin-top: 0.5rem; font-size: 0.85rem; color: var(--gray-color);">
+                                    Tip: 
+                                    {% if question.question_type == "text_short" %}
+                                        Kısa Metin
+                                    {% elif question.question_type == "text_long" %}
+                                        Uzun Metin
+                                    {% elif question.question_type == "radio" %}
+                                        Çoktan Seçmeli (Tek Seçim)
+                                    {% elif question.question_type == "checkbox" %}
+                                        Çoktan Seçmeli (Çoklu Seçim)
+                                    {% elif question.question_type == "rating" %}
+                                        Derecelendirme
+                                    {% endif %}
+                                    
+                                    {% if question.question_type == 'radio' or question.question_type == 'checkbox' %}
+                                        <div style="margin-top: 0.5rem;">
+                                            <strong>Seçenekler:</strong>
+                                            {% for choice in question.choices.all %}
+                                                <div style="margin-left: 1rem; margin-top: 0.3rem;">
+                                                    {{ forloop.counter }}. {{ choice.text }}
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 5px;">
+                                {% if question.question_type == 'radio' or question.question_type == 'checkbox' %}
+                                    <a href="{% url 'surveys:manage_choices' question.id %}" class="btn btn-outline" style="padding: 0.4rem 0.7rem; font-size: 0.85rem;">Seçenekler</a>
+                                {% endif %}
+                                <a href="{% url 'surveys:edit_question' question.id %}" class="btn btn-outline" style="padding: 0.4rem 0.7rem; font-size: 0.85rem;">Düzenle</a>
+                                <a href="{% url 'surveys:delete_question' question.id %}" class="btn btn-danger" style="padding: 0.4rem 0.7rem; font-size: 0.85rem;">Sil</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 2rem; background-color: #f9f9f9; border-radius: 8px; margin-bottom: 1.5rem;">
+                <p style="color: var(--gray-color); margin-bottom: 1rem;">Bu ankette henüz soru bulunmuyor.</p>
+                <a href="{% url 'surveys:add_question' survey.slug %}" class="btn btn-primary">İlk Soruyu Ekle</a>
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- İpuçları Bölümü -->
+    <div style="margin-top: 2rem; background-color: #f8f9fa; border-radius: 8px; padding: 1.5rem;">
+        <h3 style="font-size: 1.2rem; color: var(--dark-color); margin-bottom: 1rem;">Anket Düzenleme İpuçları</h3>
+        <ul style="padding-left: 1.5rem; margin-bottom: 0;">
+            <li style="margin-bottom: 0.5rem;">Anket başlığı kısa ve açıklayıcı olmalıdır.</li>
+            <li style="margin-bottom: 0.5rem;">Açıklama bölümünde anketin amacını ve yaklaşık tamamlanma süresini belirtin.</li>
+            <li style="margin-bottom: 0.5rem;">Soruları doğru sıralamak için sürükle-bırak özelliğini kullanabilirsiniz.</li>
+            <li style="margin-bottom: 0.5rem;">Çoktan seçmeli soruların seçeneklerini "Seçenekler" butonuna tıklayarak düzenleyebilirsiniz.</li>
+            <li>Anketinizi yayınlamadan önce önizleme ile test etmenizi öneririz.</li>
+        </ul>
+    </div>
+    
+    <!-- Tehlikeli İşlemler Bölümü -->
+    <div style="margin-top: 2rem; background-color: rgba(231, 76, 60, 0.1); border-radius: 8px; padding: 1.5rem;">
+        <h3 style="font-size: 1.2rem; color: var(--danger-color); margin-bottom: 1rem;">Tehlikeli İşlemler</h3>
+        <p style="margin-bottom: 1.5rem;">Bu işlemler geri alınamaz, dikkatli olun!</p>
+        <div style="display: flex; gap: 1rem;">
+            <a href="{% url 'surveys:delete_survey' survey.slug %}" class="btn btn-danger">Anketi Sil</a>
+        </div>
+    </div>
+</div>
+{% endblock %} 

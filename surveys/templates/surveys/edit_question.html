@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% block title %}Soru Düzenle - {{ survey.title }} - Anket Yönetim Platformu{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <div class="card">
+        <h1 class="card-title">Soruyu Düzenle</h1>
+        <p style="color: var(--gray-color); margin-bottom: 1.5rem;">Anket: {{ survey.title }}</p>
+        
+        <form method="post" action="{% url 'surveys:edit_question' question.id %}">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <div class="form-group">
+                <label for="{{ form.text.id_for_label }}" class="form-label">Soru Metni</label>
+                <input type="text" name="{{ form.text.html_name }}" id="{{ form.text.id_for_label }}" value="{{ form.text.value|default:'' }}" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; transition: all 0.3s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.05);" required>
+                {% if form.text.errors %}
+                    <div style="color: var(--danger-color); font-size: 0.9rem; margin-top: 0.3rem;">
+                        {% for error in form.text.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div style="font-size: 0.8rem; color: var(--gray-color); margin-top: 0.3rem;">
+                    Katılımcılara soracağınız soru. Net ve anlaşılır olmalı.
+                </div>
+            </div>
+            
+            {% if question.question_type != 'rating' %}
+            <div class="form-group">
+                <label for="{{ form.question_type.id_for_label }}" class="form-label">Soru Tipi</label>
+                <select name="{{ form.question_type.html_name }}" id="{{ form.question_type.id_for_label }}" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; transition: all 0.3s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.05);" required>
+                    {% for value, text in form.question_type.field.choices %}
+                    <option value="{{ value }}" {% if form.question_type.value == value %}selected{% endif %}>{{ text }}</option>
+                    {% endfor %}
+                </select>
+                {% if form.question_type.errors %}
+                    <div style="color: var(--danger-color); font-size: 0.9rem; margin-top: 0.3rem;">
+                        {% for error in form.question_type.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div style="font-size: 0.8rem; color: var(--gray-color); margin-top: 0.3rem;">
+                    Soru tipi, cevaplayıcının yanıtlama şeklini belirler. Çoktan seçmeli seçenekler için daha sonra seçenekleri ayarlayabilirsiniz.
+                </div>
+            </div>
+            {% else %}
+            <div class="form-group">
+                <label class="form-label">Soru Tipi</label>
+                <div style="padding: 12px 15px; background-color: #f5f5f5; border-radius: 8px;">
+                    Derecelendirme (Bu soru tipi değiştirilemez)
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.min_value.id_for_label }}" class="form-label">Minimum Değer</label>
+                <input type="number" name="{{ form.min_value.html_name }}" id="{{ form.min_value.id_for_label }}" value="{{ form.min_value.value|default:'1' }}" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; transition: all 0.3s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.05);" min="1" max="4">
+                {% if form.min_value.errors %}
+                    <div style="color: var(--danger-color); font-size: 0.9rem; margin-top: 0.3rem;">
+                        {% for error in form.min_value.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div style="font-size: 0.8rem; color: var(--gray-color); margin-top: 0.3rem;">
+                    Derecelendirmenin başlangıç değeri (genellikle 1)
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.max_value.id_for_label }}" class="form-label">Maksimum Değer</label>
+                <input type="number" name="{{ form.max_value.html_name }}" id="{{ form.max_value.id_for_label }}" value="{{ form.max_value.value|default:'5' }}" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; transition: all 0.3s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.05);" min="2" max="10">
+                {% if form.max_value.errors %}
+                    <div style="color: var(--danger-color); font-size: 0.9rem; margin-top: 0.3rem;">
+                        {% for error in form.max_value.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div style="font-size: 0.8rem; color: var(--gray-color); margin-top: 0.3rem;">
+                    Derecelendirmenin bitiş değeri (genellikle 5)
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="form-group">
+                <label for="{{ form.order.id_for_label }}" class="form-label">Sırası</label>
+                <input type="number" name="{{ form.order.html_name }}" id="{{ form.order.id_for_label }}" value="{{ form.order.value|default:'1' }}" style="width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; transition: all 0.3s ease; box-shadow: 0 1px 3px rgba(0,0,0,0.05);" min="1">
+                {% if form.order.errors %}
+                    <div style="color: var(--danger-color); font-size: 0.9rem; margin-top: 0.3rem;">
+                        {% for error in form.order.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div style="font-size: 0.8rem; color: var(--gray-color); margin-top: 0.3rem;">
+                    Sorunun anketteki gösterim sırası. 1'den başlar.
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-check">
+                    <input type="checkbox" name="{{ form.required.html_name }}" id="{{ form.required.id_for_label }}" {% if form.required.value %}checked{% endif %} style="width: 16px; height: 16px; margin-right: 8px;">
+                    <span style="margin-left: 0.5rem;">Zorunlu Soru</span>
+                </label>
+                {% if form.required.errors %}
+                    <div style="color: var(--danger-color); font-size: 0.9rem; margin-top: 0.3rem;">
+                        {% for error in form.required.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div style="font-size: 0.8rem; color: var(--gray-color); margin-top: 0.3rem; margin-left: 1.8rem;">
+                    Cevaplayıcıların bu soruyu yanıtlaması zorunlu olacak.
+                </div>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                <a href="{% url 'surveys:edit_survey' survey.slug %}" class="btn btn-outline">Geri Dön</a>
+                <button type="submit" class="btn btn-primary">Değişiklikleri Kaydet</button>
+            </div>
+        </form>
+    </div>
+    
+    {% if question.question_type == 'radio' or question.question_type == 'checkbox' %}
+    <div class="card" style="margin-top: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h2 class="card-title" style="margin-bottom: 0;">Soru Seçenekleri</h2>
+            <a href="{% url 'surveys:manage_choices' question.id %}" class="btn btn-primary">Seçenekleri Düzenle</a>
+        </div>
+        
+        {% if question.choices.all %}
+            <div style="margin-bottom: 1rem;">
+                <ul style="padding-left: 1.5rem; margin-bottom: 0;">
+                {% for choice in question.choices.all %}
+                    <li style="margin-bottom: 0.5rem;">{{ choice.text }}</li>
+                {% endfor %}
+                </ul>
+            </div>
+        {% else %}
+            <div style="background-color: #f9f9f9; border-radius: 8px; padding: 1.2rem; text-align: center;">
+                <p style="color: var(--gray-color); margin-bottom: 0.5rem;">Bu soru için henüz seçenek eklenmemiş.</p>
+                <a href="{% url 'surveys:manage_choices' question.id %}" class="btn btn-primary">Seçenek Ekle</a>
+            </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 
